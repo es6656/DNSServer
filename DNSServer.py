@@ -48,7 +48,7 @@ password = "es6656@nyu.edu"
 input_string = "AlwaysWatching"
 
 encrypted_value = encrypt_with_aes(input_string, password, salt) # exfil function
-#decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # exfil function
+decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # exfil function
 
 encrypted_txt = encrypted_value.decode('utf-8')
 
@@ -133,6 +133,8 @@ def run_dns_server():
                     mname, rname, serial, refresh, retry, expire, minimum = answer_data # What is the record format? See dns_records dictionary. Assume we handle @, Class, TTL elsewhere. Do some research on SOA Records
                     rdata = SOA(dns.rdataclass.IN, dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum) # follow format from previous line
                     rdata_list.append(rdata)
+                elif qtype == dns.rdatatype.TXT:
+                    rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, f"\"{answer_data}\"")]
                 else:
                     if isinstance(answer_data, str):
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
